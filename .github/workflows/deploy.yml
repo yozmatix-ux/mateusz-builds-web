@@ -22,22 +22,25 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Check build
+      - name: DEBUG - show build output
         run: |
-          echo "Current directory:"
-          pwd
-          echo "Files:"
+          echo "===== ROOT ====="
           ls -la
-          echo "Looking for build output:"
-          find . -maxdepth 3 -type d \( -name "dist" -o -name "build" \) -print
+
+          echo "===== DIRECTORIES ====="
+          find . -maxdepth 3 -type d | sort
+
+          echo "===== FILES ====="
+          find . -maxdepth 3 -type f | sort
 
       - name: Deploy to LH.pl
+        if: ${{ hashFiles('dist/**') != '' }}
         uses: appleboy/scp-action@v1
         with:
           host: serwer472236.lh.pl
           username: ${{ secrets.LH_USERNAME }}
           password: ${{ secrets.LH_PASSWORD }}
           port: 40022
-          source: "dist"
+          source: "dist/**"
           target: "/public_html/carvoro.pl"
           strip_components: 1
