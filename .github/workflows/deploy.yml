@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: bun run build
 
-           - name: Check build
+      - name: Check build
         run: |
           echo "Build contents:"
           find dist -maxdepth 2 -type f -print
@@ -37,4 +37,3 @@ jobs:
           source: "dist"
           target: "/public_html/carvoro.pl"
           strip_components: 1
-
