@@ -15,6 +15,7 @@
     "rolldown": "1.2.1"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.57.0",
     "@hookform/resolvers": "^5.2.2",
     "@lovable.dev/mcp-js": "^2.0.4",
     "@radix-ui/react-accordion": "^1.2.12",
