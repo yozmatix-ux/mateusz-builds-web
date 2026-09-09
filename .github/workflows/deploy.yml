@@ -24,8 +24,12 @@ jobs:
 
       - name: Check build
         run: |
-          echo "Build contents:"
-          find dist -maxdepth 2 -type f -print
+          echo "Current directory:"
+          pwd
+          echo "Files:"
+          ls -la
+          echo "Looking for build output:"
+          find . -maxdepth 3 -type d \( -name "dist" -o -name "build" \) -print
 
       - name: Deploy to LH.pl
         uses: appleboy/scp-action@v1
