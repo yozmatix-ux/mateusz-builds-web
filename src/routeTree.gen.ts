@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PolitykaPrywatnosciRouteImport } from './routes/polityka-prywatnosci'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as RealizacjeSlugRouteImport } from './routes/realizacje.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -24,11 +26,22 @@ const CookiesRoute = CookiesRouteImport.update({
   path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PolitykaPrywatnosciRoute = PolitykaPrywatnosciRouteImport.update({
   id: '/polityka-prywatnosci',
   path: '/polityka-prywatnosci',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const RealizacjeSlugRoute = RealizacjeSlugRouteImport.update({
   id: '/realizacje/$slug',
   path: '/realizacje/$slug',
@@ -38,39 +51,61 @@ const RealizacjeSlugRoute = RealizacjeSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/mcp': typeof McpRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/realizacje/$slug': typeof RealizacjeSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/mcp': typeof McpRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/realizacje/$slug': typeof RealizacjeSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/mcp': typeof McpRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/realizacje/$slug': typeof RealizacjeSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/cookies' | '/polityka-prywatnosci' | '/realizacje/$slug'
+  fullPaths:
+    | '/'
+    | '/cookies'
+    | '/mcp'
+    | '/polityka-prywatnosci'
+    | '/.well-known/oauth-protected-resource'
+    | '/realizacje/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cookies' | '/polityka-prywatnosci' | '/realizacje/$slug'
+  to:
+    | '/'
+    | '/cookies'
+    | '/mcp'
+    | '/polityka-prywatnosci'
+    | '/.well-known/oauth-protected-resource'
+    | '/realizacje/$slug'
   id:
     | '__root__'
     | '/'
     | '/cookies'
+    | '/mcp'
     | '/polityka-prywatnosci'
+    | '/.well-known/oauth-protected-resource'
     | '/realizacje/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
+  McpRoute: typeof McpRoute
   PolitykaPrywatnosciRoute: typeof PolitykaPrywatnosciRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   RealizacjeSlugRoute: typeof RealizacjeSlugRoute
 }
 
@@ -90,11 +125,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/polityka-prywatnosci': {
       id: '/polityka-prywatnosci'
       path: '/polityka-prywatnosci'
       fullPath: '/polityka-prywatnosci'
       preLoaderRoute: typeof PolitykaPrywatnosciRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/realizacje/$slug': {
@@ -110,7 +159,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
+  McpRoute: McpRoute,
   PolitykaPrywatnosciRoute: PolitykaPrywatnosciRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   RealizacjeSlugRoute: RealizacjeSlugRoute,
 }
 export const routeTree = rootRouteImport
