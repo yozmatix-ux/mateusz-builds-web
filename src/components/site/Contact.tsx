@@ -162,9 +162,14 @@ export function Contact() {
                     />
                   </div>
 
-                  <button type="submit" className={cn(btnStyles.solid, "w-full")}>
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className={cn(btnStyles.solid, "w-full disabled:opacity-60")}
+                  >
                     Wyślij zapytanie
                   </button>
+                  {error && <p className="text-xs text-destructive">{error}</p>}
                   <p className="text-xs text-muted-foreground">
                     Formularz otworzy Twój program pocztowy z gotową wiadomością do mnie.
                   </p>
