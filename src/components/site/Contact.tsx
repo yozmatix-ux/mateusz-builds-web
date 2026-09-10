@@ -48,8 +48,6 @@ export function Contact() {
     setSending(true);
 
     try {
-      console.log("[Contact] Rozpoczynam zapis formularza...");
-
       const { error: insertError } = await supabase
         .from("formularze")
         .insert({
@@ -61,13 +59,11 @@ export function Contact() {
         });
 
       if (insertError) {
-        console.error("[Contact] SUPABASE INSERT ERROR:", {
-          message: insertError.message,
-          details: insertError.details,
-          hint: insertError.hint,
-          code: insertError.code,
-        });
-
+        console.error("[Contact] SUPABASE INSERT ERROR", insertError);
+        console.error("[Contact] message:", insertError.message);
+        console.error("[Contact] details:", insertError.details);
+        console.error("[Contact] hint:", insertError.hint);
+        console.error("[Contact] code:", insertError.code);
         throw insertError;
       }
 
@@ -78,6 +74,8 @@ export function Contact() {
     } catch (err) {
       console.error("[Contact] Contact form error:", err);
 
-      const supabaseError = err as {
-        message?: string;
-        details?: string;
+      setError(
+        "Nie udało się wysłać zapytania. Spróbuj ponownie lub napisz na e-mail."
+      );
+    } finally {
+      setSending(false);
