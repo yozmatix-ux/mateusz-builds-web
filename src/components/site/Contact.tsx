@@ -1,11 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { Mail, Phone } from "lucide-react";
-import { useServerFn } from "@tanstack/react-start";
+
 import { cn } from "@/lib/utils";
 import { Reveal } from "./Reveal";
 import { btnStyles } from "./Btn";
 import { EMAIL, EMAIL_HREF, PHONE_DISPLAY, PHONE_HREF } from "./data";
-import { submitContactForm } from "@/lib/contact.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 const TYPES = [
   "Strona wizytówka",
@@ -17,34 +17,53 @@ const TYPES = [
 
 const field =
   "w-full rounded-sm border border-input bg-background px-4 py-3.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-accent";
-const labelCls = "block text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground";
+
+const labelCls =
+  "block text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground";
 
 export function Contact() {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const submit = useServerFn(submitContactForm);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const form = e.currentTarget;
     const data = new FormData(form);
+
+    const imie = String(data.get("name") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    const telefon = String(data.get("phone") ?? "").trim();
+    const rodzaj_strony = String(data.get("type") ?? "").trim();
+    const wiadomosc = String(data.get("message") ?? "").trim();
+
     setError(null);
     setSending(true);
+
     try {
-      await submit({
-        data: {
-          imie: String(data.get("name") ?? ""),
-          email: String(data.get("email") ?? ""),
-          telefon: String(data.get("phone") ?? ""),
-          rodzaj_strony: String(data.get("type") ?? ""),
-          wiadomosc: String(data.get("message") ?? ""),
-        },
-      });
+      const { error: insertError } = await supabase
+        .from("formularze")
+        .insert({
+          imie,
+          email,
+          telefon: telefon || null,
+          rodzaj_strony: rodzaj_strony || null,
+          wiadomosc,
+        });
+
+      if (insertError) {
+        console.error("Contact form insert failed:", insertError);
+        throw insertError;
+      }
+
       form.reset();
       setSent(true);
-    } catch {
-      setError("Nie udało się wysłać zapytania. Spróbuj ponownie lub napisz na e-mail.");
+    } catch (error) {
+      console.error("Contact form error:", error);
+      setError(
+        "Nie udało się wysłać zapytania. Spróbuj ponownie lub napisz na e-mail."
+      );
     } finally {
       setSending(false);
     }
@@ -57,9 +76,11 @@ export function Contact() {
           <div className="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
             <Reveal>
               <p className="eyebrow">Kontakt</p>
+
               <h2 className="mt-6 font-display text-4xl leading-[1.05] font-semibold sm:text-5xl lg:text-[3.5rem]">
                 Masz pomysł na stronę?
               </h2>
+
               <p className="mt-6 max-w-md leading-relaxed text-muted-foreground">
                 Opowiedz mi, czego potrzebujesz. Nawet jeśli nie masz jeszcze dokładnego pomysłu —
                 możemy wspólnie ustalić, czego potrzebujesz.
@@ -67,6 +88,7 @@ export function Contact() {
 
               <div className="mt-10 space-y-4 border-t border-border pt-10">
                 <p className="font-display text-lg font-semibold">Mateusz Wojtera</p>
+
                 <a
                   href={PHONE_HREF}
                   className="flex items-center gap-3 text-muted-foreground transition-colors hover:text-accent"
@@ -74,6 +96,7 @@ export function Contact() {
                   <Phone className="size-4" />
                   {PHONE_DISPLAY}
                 </a>
+
                 <a
                   href={EMAIL_HREF}
                   className="flex items-center gap-3 text-muted-foreground transition-colors hover:text-accent"
@@ -87,6 +110,7 @@ export function Contact() {
                 <a href={EMAIL_HREF} className={btnStyles.solid}>
                   Napisz e-mail
                 </a>
+
                 <a href={PHONE_HREF} className={btnStyles.outline}>
                   Zadzwoń
                 </a>
@@ -99,6 +123,7 @@ export function Contact() {
                   <p className="font-display text-2xl font-semibold tracking-tight">
                     Dziękuję za wiadomość.
                   </p>
+
                   <p className="mt-3 leading-relaxed text-muted-foreground">
                     Odezwę się tak szybko, jak to możliwe.
                   </p>
@@ -113,12 +138,21 @@ export function Contact() {
                       <label className={labelCls} htmlFor="name">
                         Imię
                       </label>
-                      <input id="name" name="name" required className={field} placeholder="Twoje imię" />
+
+                      <input
+                        id="name"
+                        name="name"
+                        required
+                        className={field}
+                        placeholder="Twoje imię"
+                      />
                     </div>
+
                     <div className="space-y-2">
                       <label className={labelCls} htmlFor="email">
                         Email
                       </label>
+
                       <input
                         id="email"
                         name="email"
@@ -128,17 +162,30 @@ export function Contact() {
                         placeholder="twoj@email.pl"
                       />
                     </div>
+
                     <div className="space-y-2">
                       <label className={labelCls} htmlFor="phone">
                         Telefon
                       </label>
-                      <input id="phone" name="phone" className={field} placeholder="opcjonalnie" />
+
+                      <input
+                        id="phone"
+                        name="phone"
+                        className={field}
+                        placeholder="opcjonalnie"
+                      />
                     </div>
+
                     <div className="space-y-2">
                       <label className={labelCls} htmlFor="type">
                         Rodzaj strony
                       </label>
-                      <select id="type" name="type" className={cn(field, "appearance-none")}>
+
+                      <select
+                        id="type"
+                        name="type"
+                        className={cn(field, "appearance-none")}
+                      >
                         {TYPES.map((t) => (
                           <option key={t} value={t} className="bg-background">
                             {t}
@@ -152,6 +199,7 @@ export function Contact() {
                     <label className={labelCls} htmlFor="message">
                       Wiadomość
                     </label>
+
                     <textarea
                       id="message"
                       name="message"
@@ -169,7 +217,11 @@ export function Contact() {
                   >
                     Wyślij zapytanie
                   </button>
-                  {error && <p className="text-xs text-destructive">{error}</p>}
+
+                  {error && (
+                    <p className="text-xs text-destructive">{error}</p>
+                  )}
+
                   <p className="text-xs text-muted-foreground">
                     Formularz otworzy Twój program pocztowy z gotową wiadomością do mnie.
                   </p>
