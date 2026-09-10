@@ -39,9 +39,18 @@ export function Contact() {
     const wiadomosc = String(data.get("message") ?? "").trim();
 
     setError(null);
+
+    // Walidacja wymaganych pól
+    if (!imie || !email || !wiadomosc) {
+      setError("Uzupełnij wszystkie wymagane pola.");
+      return;
+    }
+
     setSending(true);
 
     try {
+      console.log("[Contact] Rozpoczynam zapis formularza...");
+
       const { error: insertError } = await supabase
         .from("formularze")
         .insert({
@@ -53,14 +62,37 @@ export function Contact() {
         });
 
       if (insertError) {
-        console.error("Contact form insert failed:", insertError);
+        console.error("[Contact] SUPABASE INSERT ERROR:", {
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint,
+          code: insertError.code,
+        });
+
         throw insertError;
       }
+
+      console.log("[Contact] Formularz zapisany poprawnie.");
 
       form.reset();
       setSent(true);
     } catch (error) {
-      console.error("Contact form error:", error);
+      console.error("[Contact] Contact form error:", error);
+
+      const supabaseError = error as {
+        message?: string;
+        details?: string;
+        hint?: string;
+        code?: string;
+      };
+
+      console.error("[Contact] Szczegóły błędu:", {
+        message: supabaseError?.message,
+        details: supabaseError?.details,
+        hint: supabaseError?.hint,
+        code: supabaseError?.code,
+      });
+
       setError(
         "Nie udało się wysłać zapytania. Spróbuj ponownie lub napisz na e-mail."
       );
@@ -131,106 +163,4 @@ export function Contact() {
               ) : (
                 <form
                   onSubmit={handleSubmit}
-                  className="space-y-5 border border-border bg-surface/50 p-6 sm:p-10"
-                >
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className={labelCls} htmlFor="name">
-                        Imię
-                      </label>
-
-                      <input
-                        id="name"
-                        name="name"
-                        required
-                        className={field}
-                        placeholder="Twoje imię"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className={labelCls} htmlFor="email">
-                        Email
-                      </label>
-
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        required
-                        className={field}
-                        placeholder="twoj@email.pl"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className={labelCls} htmlFor="phone">
-                        Telefon
-                      </label>
-
-                      <input
-                        id="phone"
-                        name="phone"
-                        className={field}
-                        placeholder="opcjonalnie"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className={labelCls} htmlFor="type">
-                        Rodzaj strony
-                      </label>
-
-                      <select
-                        id="type"
-                        name="type"
-                        className={cn(field, "appearance-none")}
-                      >
-                        {TYPES.map((t) => (
-                          <option key={t} value={t} className="bg-background">
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className={labelCls} htmlFor="message">
-                      Wiadomość
-                    </label>
-
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={5}
-                      required
-                      className={cn(field, "resize-none")}
-                      placeholder="Napisz krótko, czego potrzebujesz."
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={sending}
-                    className={cn(btnStyles.solid, "w-full disabled:opacity-60")}
-                  >
-                    Wyślij zapytanie
-                  </button>
-
-                  {error && (
-                    <p className="text-xs text-destructive">{error}</p>
-                  )}
-
-                  <p className="text-xs text-muted-foreground">
-                    Formularz otworzy Twój program pocztowy z gotową wiadomością do mnie.
-                  </p>
-                </form>
-              )}
-            </Reveal>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+                  class
