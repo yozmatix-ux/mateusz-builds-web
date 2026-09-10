@@ -21,22 +21,33 @@ const labelCls = "block text-[0.7rem] font-semibold uppercase tracking-[0.16em] 
 
 export function Contact() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const submit = useServerFn(submitContactForm);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const body = [
-      `Imię: ${data.get("name")}`,
-      `Email: ${data.get("email")}`,
-      `Telefon: ${data.get("phone")}`,
-      `Rodzaj strony: ${data.get("type")}`,
-      "",
-      `${data.get("message")}`,
-    ].join("\n");
-    window.location.href = `${EMAIL_HREF}?subject=${encodeURIComponent(
-      "Zapytanie o stronę internetową",
-    )}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    setError(null);
+    setSending(true);
+    try {
+      await submit({
+        data: {
+          imie: String(data.get("name") ?? ""),
+          email: String(data.get("email") ?? ""),
+          telefon: String(data.get("phone") ?? ""),
+          rodzaj_strony: String(data.get("type") ?? ""),
+          wiadomosc: String(data.get("message") ?? ""),
+        },
+      });
+      form.reset();
+      setSent(true);
+    } catch {
+      setError("Nie udało się wysłać zapytania. Spróbuj ponownie lub napisz na e-mail.");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
