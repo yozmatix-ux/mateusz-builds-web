@@ -40,7 +40,6 @@ export function Contact() {
 
     setError(null);
 
-    // Walidacja wymaganych pól
     if (!imie || !email || !wiadomosc) {
       setError("Uzupełnij wszystkie wymagane pola.");
       return;
@@ -76,91 +75,9 @@ export function Contact() {
 
       form.reset();
       setSent(true);
-    } catch (error) {
-      console.error("[Contact] Contact form error:", error);
+    } catch (err) {
+      console.error("[Contact] Contact form error:", err);
 
-      const supabaseError = error as {
+      const supabaseError = err as {
         message?: string;
         details?: string;
-        hint?: string;
-        code?: string;
-      };
-
-      console.error("[Contact] Szczegóły błędu:", {
-        message: supabaseError?.message,
-        details: supabaseError?.details,
-        hint: supabaseError?.hint,
-        code: supabaseError?.code,
-      });
-
-      setError(
-        "Nie udało się wysłać zapytania. Spróbuj ponownie lub napisz na e-mail."
-      );
-    } finally {
-      setSending(false);
-    }
-  }
-
-  return (
-    <section id="kontakt" className="mt-28 lg:mt-40">
-      <div className="accent-glow relative overflow-hidden border-t border-border py-24 lg:py-32">
-        <div className="relative z-10 mx-auto max-w-[1280px] px-6 lg:px-10">
-          <div className="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:gap-20">
-            <Reveal>
-              <p className="eyebrow">Kontakt</p>
-
-              <h2 className="mt-6 font-display text-4xl leading-[1.05] font-semibold sm:text-5xl lg:text-[3.5rem]">
-                Masz pomysł na stronę?
-              </h2>
-
-              <p className="mt-6 max-w-md leading-relaxed text-muted-foreground">
-                Opowiedz mi, czego potrzebujesz. Nawet jeśli nie masz jeszcze dokładnego pomysłu —
-                możemy wspólnie ustalić, czego potrzebujesz.
-              </p>
-
-              <div className="mt-10 space-y-4 border-t border-border pt-10">
-                <p className="font-display text-lg font-semibold">Mateusz Wojtera</p>
-
-                <a
-                  href={PHONE_HREF}
-                  className="flex items-center gap-3 text-muted-foreground transition-colors hover:text-accent"
-                >
-                  <Phone className="size-4" />
-                  {PHONE_DISPLAY}
-                </a>
-
-                <a
-                  href={EMAIL_HREF}
-                  className="flex items-center gap-3 text-muted-foreground transition-colors hover:text-accent"
-                >
-                  <Mail className="size-4" />
-                  {EMAIL}
-                </a>
-              </div>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a href={EMAIL_HREF} className={btnStyles.solid}>
-                  Napisz e-mail
-                </a>
-
-                <a href={PHONE_HREF} className={btnStyles.outline}>
-                  Zadzwoń
-                </a>
-              </div>
-            </Reveal>
-
-            <Reveal delay={120}>
-              {sent ? (
-                <div className="flex h-full min-h-64 flex-col justify-center border border-accent/40 bg-surface/70 p-10">
-                  <p className="font-display text-2xl font-semibold tracking-tight">
-                    Dziękuję za wiadomość.
-                  </p>
-
-                  <p className="mt-3 leading-relaxed text-muted-foreground">
-                    Odezwę się tak szybko, jak to możliwe.
-                  </p>
-                </div>
-              ) : (
-                <form
-                  onSubmit={handleSubmit}
-                  class
