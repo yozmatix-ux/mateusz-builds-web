@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { Mail, Phone } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
 import { Reveal } from "./Reveal";
 import { btnStyles } from "./Btn";
 import { EMAIL, EMAIL_HREF, PHONE_DISPLAY, PHONE_HREF } from "./data";
+import { submitContactForm } from "@/lib/contact.functions";
 
 const TYPES = [
   "Strona wizytówka",
